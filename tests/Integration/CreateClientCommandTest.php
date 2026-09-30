@@ -75,6 +75,24 @@ final class CreateClientCommandTest extends KernelTestCase
         self::assertSame([self::AUDIENCE], $client->getRedirectUri());
     }
 
+    public function testCreatesClientWithHttpAudience(): void
+    {
+        $audience = 'http://localhost:8000';
+        $tester = $this->commandTester();
+
+        $status = $tester->execute([
+            '--name' => 'local_service',
+            '--description' => 'Local service client',
+            '--audience' => $audience,
+            '--group' => [AppFixtures::GROUP_NAME],
+        ]);
+
+        self::assertSame(Command::SUCCESS, $status);
+        $client = static::getContainer()->get(ClientRepository::class)->findOneBy(['name' => 'local_service']);
+        self::assertInstanceOf(Client::class, $client);
+        self::assertSame($audience, $client->getAudience());
+    }
+
     public function testRejectsUnknownGroupWithoutCreatingClient(): void
     {
         $tester = $this->commandTester();

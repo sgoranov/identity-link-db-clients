@@ -477,7 +477,7 @@ components:
           type: string
           maxLength: 3000
         audience:
-          description: 'HTTPS URL identifying the resource server'
+          description: 'HTTP or HTTPS URL identifying the resource server'
           type: string
           format: uri
           maxLength: 3000

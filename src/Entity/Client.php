@@ -41,7 +41,7 @@ use Symfony\Component\Validator\Constraints as Assert;
         ),
         new OA\Property(
             property: "audience",
-            description: "HTTPS URL identifying the resource server",
+            description: "HTTP or HTTPS URL identifying the resource server",
             type: "string",
             format: "uri",
             maxLength: 3000
@@ -147,7 +147,7 @@ class Client
 
     #[Groups(['create'])]
     #[Assert\NotBlank(groups: ['create'])]
-    #[Assert\Url(protocols: ['https'], groups: ['create'])]
+    #[Assert\Url(protocols: ['http', 'https'], groups: ['create'])]
     #[Assert\Length(min: 1, max: 3000, groups: ['create'])]
     #[ORM\Column(length: 3000)]
     private string $audience;

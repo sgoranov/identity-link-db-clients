@@ -45,6 +45,36 @@ class ClientControllerTest extends WebTestCase
         );
     }
 
+    public function testGetScopesForHttpAudience(): void
+    {
+        $client = $this->createAuthenticatedClient();
+        $container = $client->getContainer();
+        $router = $container->get(RouterInterface::class);
+        $group = $container->get(GroupRepository::class)
+            ->findOneBy(['name' => AppFixtures::GROUP_NAME]);
+        $clientEntity = $container->get(ClientRepository::class)
+            ->findOneBy(['name' => AppFixtures::CLIENT_NAME]);
+
+        $groupScope = new GroupScope();
+        $groupScope->setGroup($group);
+        $groupScope->setAudience('http://localhost:8000');
+        $groupScope->setScope('orders:read');
+        $entityManager = $container->get(EntityManagerInterface::class);
+        $entityManager->persist($groupScope);
+        $entityManager->flush();
+
+        $client->request('GET', $router->generate('api_v1_get_client_scopes', [
+            'id' => $clientEntity->getId(),
+            'audience' => 'http://localhost:8000',
+        ]));
+
+        $this->assertResponseIsSuccessful();
+        $this->assertSame(
+            ['orders:read'],
+            json_decode($client->getResponse()->getContent(), true)['response']['scopes']
+        );
+    }
+
     public function testGetScopesRejectsMissingAudience(): void
     {
         $client = $this->createAuthenticatedClient();
@@ -184,13 +214,13 @@ class ClientControllerTest extends WebTestCase
             json_decode($client->getResponse()->getContent(), true)['error']);
     }
 
-    public function testCreateClientWithNonHttpsAudience(): void
+    public function testCreateClientWithHttpAudience(): void
     {
         $client = $this->createAuthenticatedClient();
         $router = $client->getContainer()->get(RouterInterface::class);
 
         $content = [
-            'name' => 'test_invalid_audience',
+            'name' => 'test_http_audience',
             'description' => 'client description',
             'audience' => 'http://example.com/api',
             'redirectUri' => ['http://localhost/'],
@@ -200,9 +230,9 @@ class ClientControllerTest extends WebTestCase
 
         $client->request('POST', $router->generate('api_v1_create_client'), [], [], [], json_encode($content));
 
-        $this->assertSame(400, $client->getResponse()->getStatusCode());
-        $this->assertSame('Invalid audience. This value is not a valid URL.',
-            json_decode($client->getResponse()->getContent(), true)['error']);
+        $this->assertSame(201, $client->getResponse()->getStatusCode());
+        $this->assertSame('http://example.com/api',
+            json_decode($client->getResponse()->getContent(), true)['response']['client']['audience']);
     }
 
     public function testCreateClientCannotSetSystemFlag(): void

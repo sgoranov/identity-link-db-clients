@@ -86,7 +86,7 @@ final class ClientController extends AbstractController
         $audience = $request->query->getString('audience');
         $violations = $this->validator->validate($audience, [
             new Assert\NotBlank(),
-            new Assert\Url(protocols: ['https']),
+                new Assert\Url(protocols: ['http', 'https']),
             new Assert\Length(min: 1, max: 3000),
         ]);
 
