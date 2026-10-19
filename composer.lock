@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "d01f72a7c45b0ac9919d17ee104b07ec",
+    "content-hash": "6fa8143b142e4db6bdcae5139ecc6c6e",
     "packages": [
         {
             "name": "bjeavons/zxcvbn-php",
@@ -1849,16 +1849,16 @@
         },
         {
             "name": "sgoranov/identity-link-shared",
-            "version": "dev-develop",
+            "version": "1.1.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/sgoranov/identity-link-shared.git",
-                "reference": "a2a25d0e3f6345d932d48aeaa6b07500ad6e9c71"
+                "reference": "d925a9ded2cb71320f58f7b7f32738bc9e19ba24"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/sgoranov/identity-link-shared/zipball/a2a25d0e3f6345d932d48aeaa6b07500ad6e9c71",
-                "reference": "a2a25d0e3f6345d932d48aeaa6b07500ad6e9c71",
+                "url": "https://api.github.com/repos/sgoranov/identity-link-shared/zipball/d925a9ded2cb71320f58f7b7f32738bc9e19ba24",
+                "reference": "d925a9ded2cb71320f58f7b7f32738bc9e19ba24",
                 "shasum": ""
             },
             "require": {
@@ -1927,10 +1927,10 @@
                 "MIT"
             ],
             "support": {
-                "source": "https://github.com/sgoranov/identity-link-shared/tree/develop",
+                "source": "https://github.com/sgoranov/identity-link-shared/tree/1.1.0",
                 "issues": "https://github.com/sgoranov/identity-link-shared/issues"
             },
-            "time": "2026-10-19T13:45:12+00:00"
+            "time": "2026-10-19T12:35:09+00:00"
         },
         {
             "name": "symfony/cache",
@@ -8646,9 +8646,7 @@
     ],
     "aliases": [],
     "minimum-stability": "dev",
-    "stability-flags": {
-        "sgoranov/identity-link-shared": 20
-    },
+    "stability-flags": {},
     "prefer-stable": true,
     "prefer-lowest": false,
     "platform": {
