@@ -235,7 +235,23 @@ final class SecretController extends AbstractController
                         new OA\Property(
                             property: 'response',
                             properties: [
-                                new OA\Property(property: 'secret', ref: '#/components/schemas/Secret')
+                                new OA\Property(
+                                    property: 'secret',
+                                    allOf: [
+                                        new OA\Schema(ref: '#/components/schemas/Secret'),
+                                        new OA\Schema(
+                                            properties: [
+                                                new OA\Property(
+                                                    property: 'password',
+                                                    description: 'Generated password (64 hex characters). Returned only in this response.',
+                                                    type: 'string',
+                                                    writeOnly: false
+                                                )
+                                            ],
+                                            type: 'object'
+                                        )
+                                    ]
+                                )
                             ],
                             type: 'object'
                         )

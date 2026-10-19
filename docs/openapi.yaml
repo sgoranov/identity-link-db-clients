@@ -290,6 +290,8 @@ paths:
           description: 'Validation error'
   '/api/v1/group/{groupId}/scope':
     get:
+      tags:
+        - 'Group Scope'
       summary: 'List scopes assigned to a group'
       operationId: 2d08ed475f7eef8747d6a815ecb283a2
       parameters:
@@ -306,6 +308,8 @@ paths:
         '404':
           description: 'Group not found'
     post:
+      tags:
+        - 'Group Scope'
       summary: 'Add a scope to a group'
       operationId: 91799102f01dc632618283ccfe42af91
       parameters:
@@ -333,6 +337,8 @@ paths:
           description: 'Group not found'
   '/api/v1/group/{groupId}/scope/{scopeId}':
     delete:
+      tags:
+        - 'Group Scope'
       summary: 'Delete a group scope'
       operationId: eb66860829840555f084ed4c777312b0
       parameters:
@@ -479,7 +485,7 @@ paths:
             application/json:
               schema:
                 properties:
-                  response: { properties: { secret: { $ref: '#/components/schemas/Secret' } }, type: object }
+                  response: { properties: { secret: { allOf: [{ $ref: '#/components/schemas/Secret' }, { properties: { password: { description: 'Generated password (64 hex characters). Returned only in this response.', type: string, writeOnly: false } }, type: object }] } }, type: object }
                 type: object
         '400':
           description: 'Validation error'
@@ -727,6 +733,8 @@ security:
   -
     bearerAuth: []
 tags:
+  -
+    name: 'Group Scope'
   -
     name: Secret
   -

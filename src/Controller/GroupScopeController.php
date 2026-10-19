@@ -37,6 +37,7 @@ final class GroupScopeController extends AbstractController
             required: true,
             schema: new OA\Schema(type: 'string', format: 'uuid')
         )],
+        tags: ['Group Scope'],
         responses: [
             new OA\Response(response: 200, description: 'Scopes fetched successfully'),
             new OA\Response(response: 404, description: 'Group not found')
@@ -62,6 +63,7 @@ final class GroupScopeController extends AbstractController
             required: true,
             schema: new OA\Schema(type: 'string', format: 'uuid')
         )],
+        tags: ['Group Scope'],
         responses: [
             new OA\Response(response: 201, description: 'Scope created successfully'),
             new OA\Response(response: 400, description: 'Invalid input'),
@@ -98,6 +100,7 @@ final class GroupScopeController extends AbstractController
             new OA\Parameter(name: 'groupId', in: 'path', required: true, schema: new OA\Schema(type: 'string', format: 'uuid')),
             new OA\Parameter(name: 'scopeId', in: 'path', required: true, schema: new OA\Schema(type: 'string', format: 'uuid'))
         ],
+        tags: ['Group Scope'],
         responses: [
             new OA\Response(response: 204, description: 'Scope deleted successfully'),
             new OA\Response(response: 403, description: 'System groups cannot be updated'),
