@@ -180,7 +180,7 @@ The test suite runs in Docker against a disposable PostgreSQL instance, so the o
 the Compose plugin.
 
 ```bash
-bash bin/test-run
+bin/test-run
 ```
 
 This builds the `test` image, runs PHPUnit, and removes the containers and volumes afterwards. The script exits with
@@ -189,7 +189,7 @@ PHPUnit's exit code, and CI runs the same script on every push and pull request 
 To debug tests interactively, open a shell in the test container with the project directory mounted at `/app`:
 
 ```bash
-bash bin/test-debug
+bin/test-debug
 # inside the container:
 vendor/bin/phpunit --filter ClientControllerTest
 ```
