@@ -229,7 +229,7 @@ final class SecretController extends AbstractController
         responses: [
             new OA\Response(
                 response: 201,
-                description: 'Secret issued (password omitted)',
+                description: 'Secret issued (includes the generated password, which is not returned again)',
                 content: new OA\JsonContent(
                     properties: [
                         new OA\Property(
