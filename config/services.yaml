@@ -48,9 +48,8 @@ services:
         arguments: ['clients.']
         tags: ['security.voter']
 
-    sgoranov\IdentityLinkShared\EventListener\RequestResponseLogger:
-        arguments:
-            $logger: '@monolog.logger.rest'
+    # Adds the X-Request-Id header to every log record as extra.request_id
+    sgoranov\IdentityLinkShared\Monolog\RequestIdProcessor: ~
 
 
 when@test:
