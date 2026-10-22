@@ -16,7 +16,7 @@ to resolve the scopes a client is allowed to request.
 - [Running the service](#running-the-service)
 - [Configuration](#configuration)
 - [Authentication and scopes](#authentication-and-scopes)
-- [API](#api)
+- [OpenAPI specification](#openapi-specification)
 - [Console commands](#console-commands)
 - [Running the tests](#running-the-tests)
 - [License](#license)
@@ -40,43 +40,11 @@ The service is designed to run as part of the full Identity Link stack. See
 [identity-link-docker](https://github.com/sgoranov/identity-link-docker) for Compose files that start it
 together with PostgreSQL, Redis, and the other Identity Link services, for both production and local development.
 
-### Docker images
-
-The [Dockerfile](Dockerfile) defines three targets:
-
-| Target | Purpose                                                                                                                        |
-|--------|--------------------------------------------------------------------------------------------------------------------------------|
-| `prod` | Production image with optimized dependencies. Runs database migrations on startup.                                             |
-| `dev`  | Development image with Xdebug. Expects the sources to be mounted at `/app`, installs dependencies, creates the database, and runs migrations on startup. |
-| `test` | PHPUnit runner used by the test suite.                                                                                         |
-
-Pre-built `prod` images are published to the GitHub Container Registry:
-
-| Tag                                                 | Built from                           |
-|-----------------------------------------------------|--------------------------------------|
-| `ghcr.io/sgoranov/identity-link-db-clients:develop` | Every push to the `develop` branch   |
-| `ghcr.io/sgoranov/identity-link-db-clients:X.Y.Z`   | Release tags (`X.Y.Z`)               |
-| `ghcr.io/sgoranov/identity-link-db-clients:latest`  | The most recent release tag          |
-
 ## Configuration
 
-Defaults live in [.env](.env). Credentials are read from
+The configuration variables and their defaults are described in the [.env](.env) file. Credentials are read from
 [Docker secrets](https://docs.docker.com/compose/how-tos/use-secrets/) when the secret files exist; otherwise
-the fallback environment variables are used.
-
-| Variable           | Default                                         | Description                                                                                         |
-|--------------------|-------------------------------------------------|-----------------------------------------------------------------------------------------------------|
-| `APP_ENV`          | `prod`                                          | Symfony environment (`prod`, `dev`, `test`).                                                        |
-| `APP_SECRET_FILE`  | `/run/secrets/app_secret`                       | File containing the Symfony app secret. Fallback: `APP_SECRET`.                                     |
-| `DB_HOST`          | `identity-link-database-server`                 | PostgreSQL host.                                                                                    |
-| `DB_PORT`          | `5432`                                          | PostgreSQL port.                                                                                    |
-| `DB_NAME`          | `identity-link-db-clients`                      | Database name.                                                                                      |
-| `DB_USER_FILE`     | `/run/secrets/db_user`                          | File containing the database user. Fallback: `DB_USER`.                                             |
-| `DB_PASSWORD_FILE` | `/run/secrets/db_password`                      | File containing the database password. Fallback: `DB_PASSWORD`.                                     |
-| `REDIS_DSN`        | `redis://identity-link-redis:6379?prefix=db_clients` | Redis connection used for caching.                                                             |
-| `JWT_JWKS_URI`     | `http://identity-link-core:9000/jwks`           | JWKS endpoint used to verify access token signatures.                                               |
-| `JWT_URL`          | `https://example.com/identity-link`             | Expected token issuer and audience. Must match the canonical URL of your Identity Link deployment. |
-| `TRUSTED_PROXIES`  | `127.0.0.1,REMOTE_ADDR`                         | Proxies whose `X-Forwarded-*` headers are trusted, including `X-Forwarded-Prefix`.                  |
+the fallback environment variables `APP_SECRET`, `DB_USER`, and `DB_PASSWORD` are used.
 
 Logs are written to stderr; in `prod` they are formatted as JSON.
 
@@ -89,44 +57,14 @@ Authorization: Bearer <access token>
 ```
 
 Tokens are verified against the keys published at `JWT_JWKS_URI`, and both the issuer and the audience must
-equal `JWT_URL`. The token's space-separated `scope` claim must contain the scope the endpoint requires
-(see the table below); otherwise the request is rejected with `403 Forbidden`.
+equal `JWT_URL`. The token's space-separated `scope` claim must contain the scope the endpoint requires;
+otherwise the request is rejected with `403 Forbidden`.
 
-## API
+## OpenAPI specification
 
-All paths are relative to the service root. Behind the Identity Link gateway the service is mounted under `/clients`.
-
-| Method   | Path                                           | Description                                         | Required scope          |
-|----------|------------------------------------------------|-----------------------------------------------------|-------------------------|
-| `GET`    | `/api/v1/ping`                                 | Health check; returns `pong`                        | none                    |
-| `GET`    | `/api/v1/openapi.yaml`                         | OpenAPI specification (`dev` environment only)      | none                    |
-| `POST`   | `/api/v1/auth`                                 | Authenticate a client by ID, secret, and grant type | `clients.auth`          |
-| `POST`   | `/api/v1/query`                                | Query clients, groups, or secrets with DQL filters  | `clients.query`         |
-| `GET`    | `/api/v1/client/{id}`                          | Fetch a client                                      | `clients.read`          |
-| `GET`    | `/api/v1/client/{id}/scope?audience=…`         | List a client's scopes for an audience              | `clients.read`          |
-| `POST`   | `/api/v1/client`                               | Create a client                                     | `clients.write`         |
-| `PUT`    | `/api/v1/client/{id}`                          | Update a client                                     | `clients.write`         |
-| `DELETE` | `/api/v1/client/{id}`                          | Delete a client                                     | `clients.delete`        |
-| `GET`    | `/api/v1/group/{id}`                           | Fetch a group                                       | `clients.groups.read`   |
-| `POST`   | `/api/v1/group`                                | Create a group                                      | `clients.groups.write`  |
-| `PUT`    | `/api/v1/group/{id}`                           | Update a group                                      | `clients.groups.write`  |
-| `DELETE` | `/api/v1/group/{id}`                           | Delete a group                                      | `clients.groups.delete` |
-| `GET`    | `/api/v1/group/{groupId}/scope`                | List a group's scopes                               | `clients.groups.read`   |
-| `POST`   | `/api/v1/group/{groupId}/scope`                | Add a scope to a group                              | `clients.groups.write`  |
-| `DELETE` | `/api/v1/group/{groupId}/scope/{scopeId}`      | Remove a scope from a group                         | `clients.groups.delete` |
-| `GET`    | `/api/v1/secret/{id}`                          | Fetch a secret (without the password)               | `clients.secrets.read`  |
-| `POST`   | `/api/v1/secret`                               | Create a secret with a caller-supplied password     | `clients.secrets.write` |
-| `POST`   | `/api/v1/secret/issue`                         | Issue a secret with a generated password            | `clients.secrets.write` |
-| `PUT`    | `/api/v1/secret/{id}`                          | Update a secret                                     | `clients.secrets.write` |
-| `DELETE` | `/api/v1/secret/{id}`                          | Delete a secret                                     | `clients.secrets.delete` |
-
-`POST /api/v1/secret/issue` returns the generated password in its response. This is the only time it is
-returned, so store it right away.
-
-### OpenAPI specification
-
-The full specification, including request and response schemas, is in [docs/openapi.yaml](docs/openapi.yaml).
-You can browse it with [Swagger Editor](https://editor.swagger.io/).
+All endpoints, with their request and response schemas, are described in the OpenAPI specification at
+[docs/openapi.yaml](docs/openapi.yaml). You can browse it with [Swagger Editor](https://editor.swagger.io/).
+In the `dev` environment the service also serves it at `/api/v1/openapi.yaml`.
 
 The specification is generated from the OpenAPI attributes in `src/`. After changing an endpoint, regenerate it with:
 
