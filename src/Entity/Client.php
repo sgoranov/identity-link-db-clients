@@ -147,7 +147,7 @@ class Client
 
     #[Groups(['create'])]
     #[Assert\NotBlank(groups: ['create'])]
-    #[Assert\Url(protocols: ['http', 'https'], groups: ['create'])]
+    #[Assert\Url(protocols: ['http', 'https'], requireTld: false, groups: ['create'])]
     #[Assert\Length(min: 1, max: 3000, groups: ['create'])]
     #[ORM\Column(length: 3000)]
     private string $audience;
@@ -160,7 +160,7 @@ class Client
         groups: ['create', 'update']
     )]
     #[Assert\All([
-        new Assert\Url(groups: ['create', 'update']),
+        new Assert\Url(requireTld: false, groups: ['create', 'update']),
         new Assert\Length(min: 1, max: 3000, groups: ['create', 'update'])
     ])]
     #[ORM\Column(name: 'redirect_uri', type: 'json')]
@@ -208,25 +208,25 @@ class Client
     private bool $consentRequired = false;
 
     #[Groups(['create', 'update'])]
-    #[Assert\Url(groups: ['create', 'update'])]
+    #[Assert\Url(requireTld: false, groups: ['create', 'update'])]
     #[Assert\Length(min: 1, max: 3000, groups: ['create', 'update'])]
     #[ORM\Column(length: 3000, nullable: true)]
     private ?string $applicationUrl = null;
 
     #[Groups(['create', 'update'])]
-    #[Assert\Url(groups: ['create', 'update'])]
+    #[Assert\Url(requireTld: false, groups: ['create', 'update'])]
     #[Assert\Length(min: 1, max: 3000, groups: ['create', 'update'])]
     #[ORM\Column(length: 3000, nullable: true)]
     private ?string $termsOfServiceUrl = null;
 
     #[Groups(['create', 'update'])]
-    #[Assert\Url(groups: ['create', 'update'])]
+    #[Assert\Url(requireTld: false, groups: ['create', 'update'])]
     #[Assert\Length(min: 1, max: 3000, groups: ['create', 'update'])]
     #[ORM\Column(length: 3000, nullable: true)]
     private ?string $privacyPolicyUrl = null;
 
     #[Groups(['create', 'update'])]
-    #[Assert\Url(groups: ['create', 'update'])]
+    #[Assert\Url(requireTld: false, groups: ['create', 'update'])]
     #[Assert\Length(min: 1, max: 3000, groups: ['create', 'update'])]
     #[ORM\Column(length: 3000, nullable: true)]
     private ?string $logoUrl = null;
