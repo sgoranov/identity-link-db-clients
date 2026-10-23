@@ -10,7 +10,7 @@
         "ext-iconv": "*",
         "doctrine/doctrine-bundle": "^3",
         "doctrine/doctrine-migrations-bundle": "^3",
-        "doctrine/orm": "^3",
+        "doctrine/orm": "^3.7",
         "sgoranov/identity-link-shared": "^2.0",
         "symfony/cache": "7.4.*",
         "symfony/console": "7.4.*",
