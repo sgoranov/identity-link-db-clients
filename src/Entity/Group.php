@@ -10,7 +10,7 @@ use sgoranov\IdentityLinkShared\Validator\UniqueEntry;
 use Doctrine\ORM\Mapping as ORM;
 use OpenApi\Attributes as OA;
 use SortDirection;
-use Symfony\Component\Serializer\Annotation\Groups;
+use Symfony\Component\Serializer\Attribute\Groups;
 use Symfony\Component\Serializer\Attribute\Ignore;
 use Symfony\Component\Validator\Constraints as Assert;
 
