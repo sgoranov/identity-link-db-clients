@@ -1,25 +1,9 @@
 # Identity Link DB Clients
 
-![License](https://img.shields.io/github/license/sgoranov/identity-link-db-clients)
-![Issues](https://img.shields.io/github/issues/sgoranov/identity-link-db-clients)
-[![PHPUnit Tests](https://github.com/sgoranov/identity-link-db-clients/actions/workflows/phpunit.yml/badge.svg)](https://github.com/sgoranov/identity-link-db-clients/actions/workflows/phpunit.yml)
-[![Security Audit](https://github.com/sgoranov/identity-link-db-clients/actions/workflows/vulnerability-scan.yml/badge.svg)](https://github.com/sgoranov/identity-link-db-clients/actions/workflows/vulnerability-scan.yml)
-
 The client registry of the Identity Link system. This service exposes a REST API for managing
 OAuth 2.0 **clients**, their **secrets**, and the **groups** that grant clients scopes on
 protected-resource audiences. Other Identity Link services use it to authenticate clients and
 to resolve the scopes a client is allowed to request.
-
-## Contents
-
-- [Domain model](#domain-model)
-- [Running the service](#running-the-service)
-- [Configuration](#configuration)
-- [Authentication and scopes](#authentication-and-scopes)
-- [OpenAPI specification](#openapi-specification)
-- [Console commands](#console-commands)
-- [Running the tests](#running-the-tests)
-- [License](#license)
 
 ## Domain model
 
@@ -122,7 +106,7 @@ bin/test-run
 ```
 
 This builds the `test` image, runs PHPUnit, and removes the containers and volumes afterwards. The script exits with
-PHPUnit's exit code, and CI runs the same script on every push and pull request to `develop`.
+PHPUnit's exit code, and CI runs the same script on every push and pull request to `develop` and `main`.
 
 To debug tests interactively, open a shell in the test container with the project directory mounted at `/app`:
 
