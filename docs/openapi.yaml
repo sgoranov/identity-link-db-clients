@@ -44,6 +44,43 @@ paths:
                 properties:
                   response: { properties: { result: { type: array, items: { type: object } }, hasMore: { type: boolean } }, type: object }
                 type: object
+  '/api/v1/client/{id}/scope':
+    get:
+      tags:
+        - Client
+      summary: 'Fetch scopes granted to a client for an audience'
+      operationId: 641e44cd6523a4c118346278f60a33bb
+      parameters:
+        -
+          name: id
+          in: path
+          description: 'UUID of the client'
+          required: true
+          schema:
+            type: string
+            format: uuid
+        -
+          name: audience
+          in: query
+          description: 'Protected-resource audience'
+          required: true
+          schema:
+            type: string
+            format: uri
+            maxLength: 3000
+      responses:
+        '200':
+          description: 'Scopes fetched successfully'
+          content:
+            application/json:
+              schema:
+                properties:
+                  response: { properties: { scopes: { type: array, items: { type: string } } }, type: object }
+                type: object
+        '400':
+          description: 'Invalid audience'
+        '404':
+          description: 'Client not found'
   '/api/v1/client/{id}':
     get:
       tags:
@@ -251,6 +288,81 @@ paths:
                 type: object
         '400':
           description: 'Validation error'
+  '/api/v1/group/{groupId}/scope':
+    get:
+      tags:
+        - 'Group Scope'
+      summary: 'List scopes assigned to a group'
+      operationId: 2d08ed475f7eef8747d6a815ecb283a2
+      parameters:
+        -
+          name: groupId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: 'Scopes fetched successfully'
+        '404':
+          description: 'Group not found'
+    post:
+      tags:
+        - 'Group Scope'
+      summary: 'Add a scope to a group'
+      operationId: 91799102f01dc632618283ccfe42af91
+      parameters:
+        -
+          name: groupId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GroupScope'
+      responses:
+        '201':
+          description: 'Scope created successfully'
+        '400':
+          description: 'Invalid input'
+        '403':
+          description: 'System groups cannot be updated'
+        '404':
+          description: 'Group not found'
+  '/api/v1/group/{groupId}/scope/{scopeId}':
+    delete:
+      tags:
+        - 'Group Scope'
+      summary: 'Delete a group scope'
+      operationId: eb66860829840555f084ed4c777312b0
+      parameters:
+        -
+          name: groupId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        -
+          name: scopeId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '204':
+          description: 'Scope deleted successfully'
+        '403':
+          description: 'System groups cannot be updated'
+        '404':
+          description: 'Group or scope not found'
   '/api/v1/secret/{id}':
     get:
       tags:
@@ -368,12 +480,12 @@ paths:
               type: object
       responses:
         '201':
-          description: 'Secret issued (password omitted)'
+          description: 'Secret issued (includes the generated password, which is not returned again)'
           content:
             application/json:
               schema:
                 properties:
-                  response: { properties: { secret: { $ref: '#/components/schemas/Secret' } }, type: object }
+                  response: { properties: { secret: { allOf: [{ $ref: '#/components/schemas/Secret' }, { properties: { password: { description: 'Generated password (64 hex characters). Returned only in this response.', type: string, writeOnly: false } }, type: object }] } }, type: object }
                 type: object
         '400':
           description: 'Validation error'
@@ -477,7 +589,7 @@ components:
           type: string
           maxLength: 3000
         audience:
-          description: 'HTTPS URL identifying the resource server'
+          description: 'HTTP or HTTPS URL identifying the resource server'
           type: string
           format: uri
           maxLength: 3000
@@ -558,6 +670,30 @@ components:
           description: 'Indicates whether the group is managed by the system and cannot be updated or deleted through the API'
           type: boolean
           readOnly: true
+        scopes:
+          description: 'Scopes issued for this group and their protected-resource audiences'
+          type: array
+          items:
+            $ref: '#/components/schemas/GroupScope'
+      type: object
+    GroupScope:
+      required:
+        - audience
+        - scope
+      properties:
+        id:
+          type: string
+          format: uuid
+        audience:
+          description: 'Protected-resource audience'
+          type: string
+          maxLength: 3000
+          example: 'https://example.com/orders'
+        scope:
+          description: 'Scope issued to this audience for members of the group'
+          type: string
+          maxLength: 100
+          example: 'orders:read'
       type: object
     Secret:
       title: Secret
@@ -597,6 +733,8 @@ security:
   -
     bearerAuth: []
 tags:
+  -
+    name: 'Group Scope'
   -
     name: Secret
   -

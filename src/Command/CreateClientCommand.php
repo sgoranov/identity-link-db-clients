@@ -37,7 +37,7 @@ final class CreateClientCommand extends AbstractCommand
         $this
             ->addOption('name', null, InputOption::VALUE_REQUIRED, 'Unique client name.')
             ->addOption('description', null, InputOption::VALUE_REQUIRED, 'Client description.')
-            ->addOption('audience', null, InputOption::VALUE_REQUIRED, 'HTTPS resource-server audience.')
+            ->addOption('audience', null, InputOption::VALUE_REQUIRED, 'HTTP or HTTPS resource-server audience.')
             ->addOption(
                 'redirect-uri',
                 null,

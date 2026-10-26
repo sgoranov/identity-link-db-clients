@@ -110,18 +110,22 @@ final class ConfigureGroupScopesCommandTest extends KernelTestCase
             ->findOneBy(['name' => 'administrators']));
     }
 
-    public function testRejectsInvalidAudienceWithoutChangingExistingScopes(): void
+    public function testAcceptsHttpAudienceWithoutChangingOtherAudiences(): void
     {
         $this->persistScope(AppFixtures::GROUP_NAME, self::AUDIENCE, 'users.read');
         $tester = $this->commandTester(false);
 
         $status = $tester->execute([
             '--group' => AppFixtures::GROUP_NAME,
-            '--audience' => 'http://example.com/api',
+            '--audience' => 'http://localhost:8000',
             '--scope' => ['users.write'],
         ]);
 
-        self::assertSame(Command::INVALID, $status);
+        self::assertSame(Command::SUCCESS, $status);
+        self::assertSame(
+            ['users.write'],
+            $this->scopeNames(AppFixtures::GROUP_NAME, 'http://localhost:8000'),
+        );
         self::assertSame(
             ['users.read'],
             $this->scopeNames(AppFixtures::GROUP_NAME, self::AUDIENCE),

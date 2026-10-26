@@ -11,7 +11,7 @@ use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 use Symfony\Component\Serializer\Context\Normalizer\ObjectNormalizerContextBuilder;
 use Symfony\Component\Serializer\SerializerInterface;
@@ -229,13 +229,29 @@ final class SecretController extends AbstractController
         responses: [
             new OA\Response(
                 response: 201,
-                description: 'Secret issued (password omitted)',
+                description: 'Secret issued (includes the generated password, which is not returned again)',
                 content: new OA\JsonContent(
                     properties: [
                         new OA\Property(
                             property: 'response',
                             properties: [
-                                new OA\Property(property: 'secret', ref: '#/components/schemas/Secret')
+                                new OA\Property(
+                                    property: 'secret',
+                                    allOf: [
+                                        new OA\Schema(ref: '#/components/schemas/Secret'),
+                                        new OA\Schema(
+                                            properties: [
+                                                new OA\Property(
+                                                    property: 'password',
+                                                    description: 'Generated password (64 hex characters). Returned only in this response.',
+                                                    type: 'string',
+                                                    writeOnly: false
+                                                )
+                                            ],
+                                            type: 'object'
+                                        )
+                                    ]
+                                )
                             ],
                             type: 'object'
                         )
